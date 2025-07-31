@@ -1,0 +1,9 @@
+#!/bin/sh
+# Pre-commit hook for TiyatroFlix project
+# Copy or symlink this file to .git/hooks/pre-commit to enable pre-commit linting
+
+# Change to frontend directory and run lint-staged
+cd frontend && npx lint-staged
+
+# Exit with the status of lint-staged
+exit $?
