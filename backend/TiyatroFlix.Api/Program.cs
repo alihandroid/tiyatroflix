@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using TiyatroFlix.Infrastructure.Data;
 using TiyatroFlix.Infrastructure.Persistence;
+using TiyatroFlix.Api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddCors();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -27,12 +27,8 @@ app.UseHttpsRedirection();
 // TODO: Remove after the prototype is done
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
-app.MapGet("/plays", async (TiyatroFlixDbContext db) =>
-{
-    return await db.Plays.ToListAsync();
-})
-.WithName("GetPlays")
-.WithOpenApi();
+// Register modular endpoints
+app.MapPlayEndpoints();
 
 // Seed the database
 using (var scope = app.Services.CreateScope())
