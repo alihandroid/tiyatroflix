@@ -2,6 +2,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TiyatroFlix.Domain\TiyatroFlix.Domain.csproj" />
+    <ProjectReference Include="..\TiyatroFlix.Infrastructure\TiyatroFlix.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
   </ItemGroup>
 
   <PropertyGroup>

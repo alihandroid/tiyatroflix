@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TiyatroFlix.Domain\TiyatroFlix.Domain.csproj" />
-    <ProjectReference Include="..\TiyatroFlix.Application\TiyatroFlix.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

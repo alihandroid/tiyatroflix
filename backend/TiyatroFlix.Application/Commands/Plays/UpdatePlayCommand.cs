@@ -1,13 +1,12 @@
-using System;
+using MediatR;
 
-namespace TiyatroFlix.Domain.Entities
+namespace TiyatroFlix.Application.Commands.Plays
 {
-    public class Play
+    public class UpdatePlayCommand : IRequest<bool>
     {
         public int Id { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
-        // TODO: Create a separate Director entity later
         public required string Director { get; set; }
         public required string PosterImageUrl { get; set; }
         public required string TrailerUrl { get; set; }
