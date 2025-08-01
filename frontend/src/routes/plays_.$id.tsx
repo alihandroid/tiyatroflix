@@ -14,18 +14,23 @@ const fetchPlay = async (id: string | number): Promise<Play> => {
 
 export const Route = createFileRoute('/plays_/$id')({
   component: PlayDetails,
+  beforeLoad: ({ params }) => {
+    return {
+      playQueryOptions: {
+        queryKey: ['plays', params.id],
+        queryFn: () => fetchPlay(params.id),
+        staleTime: 2 * 60 * 1000, // 2 minutes
+      },
+    }
+  },
+  loader: async ({ context: { queryClient, playQueryOptions } }) => {
+    await queryClient.prefetchQuery(playQueryOptions)
+  },
 })
 
 function PlayDetails() {
-  const { id } = Route.useParams()
-  const {
-    data: play,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['plays', id],
-    queryFn: () => fetchPlay(id),
-  })
+  const { playQueryOptions } = Route.useRouteContext()
+  const { data: play, isLoading, error } = useQuery(playQueryOptions)
 
   if (isLoading) {
     return <div>Loading play details...</div>
