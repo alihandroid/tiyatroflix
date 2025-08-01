@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiyatroFlix.Api", "TiyatroF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiyatroFlix.Domain", "TiyatroFlix.Domain\TiyatroFlix.Domain.csproj", "{8B87549A-9ED5-404B-B316-7F49FF70808B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiyatroFlix.Application", "TiyatroFlix.Application\TiyatroFlix.Application.csproj", "{BD73902F-6740-4397-89CE-9CD6C7552148}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiyatroFlix.Infrastructure", "TiyatroFlix.Infrastructure\TiyatroFlix.Infrastructure.csproj", "{759F4BD1-422A-46CD-9D87-711DC641EE4C}"
 EndProject
 Global
@@ -24,10 +22,6 @@ Global
 		{8B87549A-9ED5-404B-B316-7F49FF70808B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B87549A-9ED5-404B-B316-7F49FF70808B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B87549A-9ED5-404B-B316-7F49FF70808B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD73902F-6740-4397-89CE-9CD6C7552148}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD73902F-6740-4397-89CE-9CD6C7552148}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD73902F-6740-4397-89CE-9CD6C7552148}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD73902F-6740-4397-89CE-9CD6C7552148}.Release|Any CPU.Build.0 = Release|Any CPU
 		{759F4BD1-422A-46CD-9D87-711DC641EE4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{759F4BD1-422A-46CD-9D87-711DC641EE4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{759F4BD1-422A-46CD-9D87-711DC641EE4C}.Release|Any CPU.ActiveCfg = Release|Any CPU

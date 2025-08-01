@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace TiyatroFlix.Application.Commands.Plays
+namespace TiyatroFlix.Api.Commands.Plays
 {
     public class DeletePlayCommand : IRequest<bool>
     {

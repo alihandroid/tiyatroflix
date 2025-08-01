@@ -1,7 +1,7 @@
 using MediatR;
 using TiyatroFlix.Domain.Entities;
 
-namespace TiyatroFlix.Application.Queries.Plays
+namespace TiyatroFlix.Api.Queries.Plays
 {
     public class GetPlayByIdQuery : IRequest<Play?>
     {

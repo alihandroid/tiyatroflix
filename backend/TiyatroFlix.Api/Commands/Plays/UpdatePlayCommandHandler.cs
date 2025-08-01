@@ -1,7 +1,7 @@
 using MediatR;
 using TiyatroFlix.Infrastructure.Persistence;
 
-namespace TiyatroFlix.Application.Commands.Plays
+namespace TiyatroFlix.Api.Commands.Plays
 {
     public class UpdatePlayCommandHandler : IRequestHandler<UpdatePlayCommand, bool>
     {

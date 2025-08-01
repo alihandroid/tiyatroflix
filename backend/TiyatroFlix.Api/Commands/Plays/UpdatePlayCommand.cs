@@ -1,10 +1,10 @@
 using MediatR;
-using TiyatroFlix.Domain.Entities;
 
-namespace TiyatroFlix.Application.Commands.Plays
+namespace TiyatroFlix.Api.Commands.Plays
 {
-    public class CreatePlayCommand : IRequest<Play>
+    public class UpdatePlayCommand : IRequest<bool>
     {
+        public int Id { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
         public required string Director { get; set; }

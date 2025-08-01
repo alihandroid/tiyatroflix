@@ -1,6 +1,6 @@
 using MediatR;
-using TiyatroFlix.Application.Commands.Plays;
-using TiyatroFlix.Application.Queries.Plays;
+using TiyatroFlix.Api.Commands.Plays;
+using TiyatroFlix.Api.Queries.Plays;
 using TiyatroFlix.Domain.Entities;
 
 namespace TiyatroFlix.Api.Endpoints

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TiyatroFlix.Domain.Entities;
 using TiyatroFlix.Infrastructure.Persistence;
 
-namespace TiyatroFlix.Application.Queries.Plays
+namespace TiyatroFlix.Api.Queries.Plays
 {
     public class GetAllPlaysQueryHandler : IRequestHandler<GetAllPlaysQuery, List<Play>>
     {

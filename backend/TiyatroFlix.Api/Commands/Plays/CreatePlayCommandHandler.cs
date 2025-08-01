@@ -2,7 +2,7 @@ using MediatR;
 using TiyatroFlix.Domain.Entities;
 using TiyatroFlix.Infrastructure.Persistence;
 
-namespace TiyatroFlix.Application.Commands.Plays
+namespace TiyatroFlix.Api.Commands.Plays
 {
     public class CreatePlayCommandHandler : IRequestHandler<CreatePlayCommand, Play>
     {

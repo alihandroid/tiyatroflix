@@ -2,7 +2,7 @@ using MediatR;
 using TiyatroFlix.Domain.Entities;
 using TiyatroFlix.Infrastructure.Persistence;
 
-namespace TiyatroFlix.Application.Queries.Plays
+namespace TiyatroFlix.Api.Queries.Plays
 {
     public class GetPlayByIdQueryHandler : IRequestHandler<GetPlayByIdQuery, Play?>
     {
