@@ -1,4 +1,5 @@
 using MediatR;
+
 using TiyatroFlix.Domain.Entities;
 
 namespace TiyatroFlix.Api.Commands.Plays

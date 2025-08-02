@@ -1,5 +1,7 @@
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
+
 using TiyatroFlix.Domain.Entities;
 using TiyatroFlix.Infrastructure.Persistence;
 

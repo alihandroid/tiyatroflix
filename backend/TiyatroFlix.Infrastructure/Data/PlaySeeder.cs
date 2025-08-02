@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+
 using TiyatroFlix.Domain.Entities;
 using TiyatroFlix.Infrastructure.Persistence;
 
@@ -11,7 +12,7 @@ namespace TiyatroFlix.Infrastructure.Data
             using var scope = serviceProvider.CreateScope();
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<TiyatroFlixDbContext>();
-    
+
             if (!context.Plays.Any())
             {
                 var plays = new List<Play>
@@ -35,7 +36,7 @@ namespace TiyatroFlix.Infrastructure.Data
                         VideoUrl = "https://example.com/romeo-juliet-video.mp4"
                     }
                 };
-    
+
                 context.Plays.AddRange(plays);
                 context.SaveChanges();
             }

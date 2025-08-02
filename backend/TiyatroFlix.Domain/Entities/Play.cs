@@ -1,5 +1,3 @@
-using System;
-
 namespace TiyatroFlix.Domain.Entities
 {
     public class Play
