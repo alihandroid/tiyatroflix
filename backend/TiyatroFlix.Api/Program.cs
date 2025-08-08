@@ -53,7 +53,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
 
 // Register TokenService
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -102,6 +106,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         PlaySeeder.Seed(services);
+        AdminRoleMigration.SeedAdminRole(services);
     }
     catch (Exception ex)
     {

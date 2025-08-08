@@ -39,7 +39,7 @@ public class TokenService : ITokenService
 
     public async Task<AuthResponse> GenerateTokensAsync(ApplicationUser user)
     {
-        var accessToken = GenerateAccessToken(user);
+        var accessToken = await GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();
 
         await SaveRefreshTokenAsync(user, refreshToken);
@@ -110,15 +110,22 @@ public class TokenService : ITokenService
         return principal;
     }
 
-    private string GenerateAccessToken(ApplicationUser user)
+    private async Task<string> GenerateAccessToken(ApplicationUser user)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? ""),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
             new Claim("uid", user.Id)
         };
+
+        // Add role claims
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

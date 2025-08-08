@@ -1,5 +1,7 @@
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
+
 using TiyatroFlix.Api.Commands.Plays;
 using TiyatroFlix.Api.Queries.Plays;
 using TiyatroFlix.Domain.Entities;
@@ -40,6 +42,7 @@ namespace TiyatroFlix.Api.Endpoints
                 return Results.Created($"/api/plays/{createdPlay.Id}", createdPlay);
             })
             .WithName("CreatePlay")
+            .RequireAuthorization("AdminOnly")
             .Produces<Play>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest);
 
@@ -51,6 +54,7 @@ namespace TiyatroFlix.Api.Endpoints
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("UpdatePlay")
+            .RequireAuthorization("AdminOnly")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound);
 
@@ -61,6 +65,7 @@ namespace TiyatroFlix.Api.Endpoints
                 return result ? Results.NoContent() : Results.NotFound();
             })
             .WithName("DeletePlay")
+            .RequireAuthorization("AdminOnly")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound);
         }
