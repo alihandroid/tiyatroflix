@@ -1,6 +1,7 @@
 using MediatR;
 
 using TiyatroFlix.Api.Commands.Users;
+using TiyatroFlix.Api.Services;
 
 namespace TiyatroFlix.Api.Endpoints
 {
@@ -12,44 +13,25 @@ namespace TiyatroFlix.Api.Endpoints
                 .WithTags("Users")
                 .WithOpenApi();
 
-            group.MapPost("/register", async (IMediator mediator, RegisterUserCommand command) =>
+            group.MapPost("/register", async (
+                IMediator mediator,
+                ITokenService tokenService,
+                RegisterUserCommand command) =>
             {
                 try
                 {
-                    await mediator.Send(command);
-                    // Return a success status code, e.g., 201 Created
-                    return Results.Created(); // Or Results.Ok() if not returning a location
+                    var user = await mediator.Send(command);
+                    var authResponse = await tokenService.GenerateTokensAsync(user);
+                    return Results.Ok(authResponse);
                 }
                 catch (Exception ex)
                 {
-                    // Log the exception
-                    // Return an appropriate error response
-                    return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+                    return Results.BadRequest(ex.Message);
                 }
             })
             .WithName("RegisterUser")
-            .Produces(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
-
-            group.MapPost("/login", async (IMediator mediator, LoginUserCommand command) =>
-            {
-                try
-                {
-                    await mediator.Send(command);
-                    // On successful login, you would typically return a JWT token or similar.
-                    // For now, we'll return Ok.
-                    return Results.Ok();
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception
-                    // Return an appropriate error response
-                    return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
-                }
-            })
-            .WithName("LoginUser")
-            .Produces(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .Produces<AuthResponse>()
+            .Produces(StatusCodes.Status400BadRequest);
         }
     }
 }

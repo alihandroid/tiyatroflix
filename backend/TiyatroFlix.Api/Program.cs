@@ -1,10 +1,15 @@
+using System.Text;
+
 using FluentValidation;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 using TiyatroFlix.Api.Behaviors;
 using TiyatroFlix.Api.Endpoints;
+using TiyatroFlix.Api.Services;
 using TiyatroFlix.Domain.Entities;
 using TiyatroFlix.Infrastructure.Data;
 using TiyatroFlix.Infrastructure.Persistence;
@@ -23,6 +28,35 @@ builder.Services.AddDbContext<TiyatroFlixDbContext>(options =>
 // Configure Identity Services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<TiyatroFlixDbContext>();
+
+// Configure JWT Authentication
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection("JwtSettings"));
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JwtSettings:Secret is missing")))
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// Register TokenService
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Register MediatR
 builder.Services.AddMediatR(cfg =>
@@ -50,8 +84,13 @@ app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
 // Register modular endpoints
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Map endpoints
 app.MapPlayEndpoints();
 app.MapUserEndpoints();
+app.MapAuthEndpoints();
 
 // Register global exception handler
 app.UseExceptionHandler();

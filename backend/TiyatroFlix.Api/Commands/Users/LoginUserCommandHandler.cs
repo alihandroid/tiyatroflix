@@ -6,7 +6,7 @@ using TiyatroFlix.Domain.Entities;
 
 namespace TiyatroFlix.Api.Commands.Users
 {
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string> // Consider returning a token or success status
+    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, ApplicationUser>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -17,12 +17,11 @@ namespace TiyatroFlix.Api.Commands.Users
             _userManager = userManager;
         }
 
-        public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+        public async Task<ApplicationUser> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                // User not found
                 throw new Exception("Invalid login attempt.");
             }
 
@@ -30,12 +29,10 @@ namespace TiyatroFlix.Api.Commands.Users
 
             if (!result.Succeeded)
             {
-                // Handle login failure (e.g., incorrect password)
                 throw new Exception("Invalid login attempt.");
             }
 
-            // TODO: Add logic to generate and return a token or access token
-            return "Token";
+            return user;
         }
     }
 }
