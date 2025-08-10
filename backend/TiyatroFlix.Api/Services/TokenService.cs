@@ -19,6 +19,7 @@ public interface ITokenService
     Task<AuthResponse> RefreshTokenAsync(string accessToken, string refreshToken);
     Task RevokeRefreshTokenAsync(string refreshToken);
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+    bool ValidateToken(string accessToken);
 }
 
 public class TokenService : ITokenService
@@ -108,6 +109,24 @@ public class TokenService : ITokenService
         }
 
         return principal;
+    }
+
+    public bool ValidateToken(string accessToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
+            ValidIssuer = _jwtOptions.Issuer,
+            ValidAudience = _jwtOptions.Audience,
+        };
+
+        var _ = tokenHandler.ValidateToken(accessToken, validationParameters, out var _);
+        return true;
     }
 
     private async Task<string> GenerateAccessToken(ApplicationUser user)

@@ -14,25 +14,39 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this WebApplication app)
     {
-        app.MapPost("/auth/login", Login)
-            .Produces<AuthResponse>()
-            .Produces(400)
-            .WithTags("Authentication");
+        var group = app.MapGroup("/auth")
+            .WithTags("Authentication")
+            .WithOpenApi();
 
-        app.MapPost("/auth/refresh", RefreshToken)
-            .Produces<AuthResponse>()
-            .Produces(400)
-            .WithTags("Authentication");
+        group.MapPost("/login", Login)
+            .Produces<LoginResponse>()
+            .Produces(400);
 
-        app.MapPost("/auth/revoke", RevokeToken)
+        group.MapPost("/refresh", RefreshToken)
+            .Produces<AuthResponse>()
+            .Produces(400);
+
+        group.MapPost("/revoke", RevokeToken)
             .Produces(204)
-            .Produces(400)
-            .WithTags("Authentication");
+            .Produces(400);
+
+        group.MapPost("/validate", ValidateToken)
+            .Produces(204)
+            .Produces(400);
+
     }
 
     public record LoginRequest(
         [Required] string Email,
         [Required] string Password);
+
+    public record LoginResponse(
+        [Required] string Id,
+        [Required] string? Email,
+        [Required] string FirstName,
+        [Required] string LastName,
+        [Required] AuthResponse Tokens
+    );
 
     private static async Task<IResult> Login(
         [FromBody] LoginRequest request,
@@ -48,8 +62,8 @@ public static class AuthEndpoints
         try
         {
             var user = await mediator.Send(command);
-            var authResponse = await tokenService.GenerateTokensAsync(user);
-            return Results.Ok(authResponse);
+            var tokens = await tokenService.GenerateTokensAsync(user);
+            return Results.Ok(new LoginResponse(user.Id, user.Email, user.FirstName, user.LastName, tokens));
         }
         catch (Exception ex)
         {
@@ -88,6 +102,32 @@ public static class AuthEndpoints
         try
         {
             await tokenService.RevokeRefreshTokenAsync(request.RefreshToken);
+            return Results.NoContent();
+        }
+        catch (Exception ex)
+        {
+            return Results.BadRequest(ex.Message);
+        }
+    }
+
+    private static IResult ValidateToken(
+        [FromHeader(Name = "Authorization")] string? authorization,
+        [FromServices] ITokenService tokenService)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(authorization))
+            {
+                return Results.BadRequest();
+            }
+
+            if (!authorization.StartsWith("Bearer "))
+            {
+                return Results.BadRequest();
+            }
+
+            tokenService.ValidateToken(authorization[7..]);
+
             return Results.NoContent();
         }
         catch (Exception ex)

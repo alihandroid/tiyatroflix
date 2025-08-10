@@ -2,8 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 
 interface User {
   id: string
-  username: string
   email: string
+  firstName: string
+  lastName: string
 }
 
 interface AuthState {
@@ -22,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Restore auth state on app load
   useEffect(() => {
-    const token = localStorage.getItem('auth-token')
+    const token = localStorage.getItem('access-token')
     if (token) {
       // Validate token with your API
       fetch(import.meta.env.VITE_API_BASE_URL + '/auth/validate', {
@@ -34,11 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(userData.user)
             setIsAuthenticated(true)
           } else {
-            localStorage.removeItem('auth-token')
+            localStorage.removeItem('access-token')
           }
         })
         .catch(() => {
-          localStorage.removeItem('auth-token')
+          localStorage.removeItem('access-token')
         })
         .finally(() => {
           setIsLoading(false)
@@ -57,23 +58,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
   }
 
-  const login = async (username: string, password: string) => {
+  const login = async (email: string, password: string) => {
     // Replace with your authentication logic
     const response = await fetch(
       import.meta.env.VITE_API_BASE_URL + '/auth/login',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       },
     )
 
     if (response.ok) {
-      const userData = await response.json()
+      const res = await response.json()
+      const { tokens, ...userData } = res
       setUser(userData)
       setIsAuthenticated(true)
       // Store token for persistence
-      localStorage.setItem('auth-token', userData.token)
+      localStorage.setItem('access-token', tokens.accessToken)
+      localStorage.setItem('refresh-token', tokens.refreshToken)
     } else {
       throw new Error('Authentication failed')
     }
@@ -82,7 +85,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null)
     setIsAuthenticated(false)
-    localStorage.removeItem('auth-token')
+    localStorage.removeItem('access-token')
+    localStorage.removeItem('refresh-token')
   }
 
   return (
