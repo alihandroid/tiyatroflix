@@ -5,6 +5,7 @@ interface User {
   email: string
   firstName: string
   lastName: string
+  roles: Array<string>
 }
 
 interface AuthState {
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
         .then((response) => response.json())
         .then((userData) => {
+          console.log(userData)
           if (userData.valid) {
             setUser(userData.user)
             setIsAuthenticated(true)
@@ -70,8 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     if (response.ok) {
-      const res = await response.json()
-      const { tokens, ...userData } = res
+      const { user: userData, tokens } = await response.json()
       setUser(userData)
       setIsAuthenticated(true)
       // Store token for persistence

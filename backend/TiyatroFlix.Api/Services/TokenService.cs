@@ -19,7 +19,7 @@ public interface ITokenService
     Task<AuthResponse> RefreshTokenAsync(string accessToken, string refreshToken);
     Task RevokeRefreshTokenAsync(string refreshToken);
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
-    bool ValidateToken(string accessToken);
+    bool ValidateToken(string accessToken, out string userId);
 }
 
 public class TokenService : ITokenService
@@ -111,7 +111,7 @@ public class TokenService : ITokenService
         return principal;
     }
 
-    public bool ValidateToken(string accessToken)
+    public bool ValidateToken(string accessToken, out string userId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
@@ -125,7 +125,8 @@ public class TokenService : ITokenService
             ValidAudience = _jwtOptions.Audience,
         };
 
-        var _ = tokenHandler.ValidateToken(accessToken, validationParameters, out var _);
+        var claimsPrincipal = tokenHandler.ValidateToken(accessToken, validationParameters, out var token);
+        userId = claimsPrincipal.Claims.First(c => c.Type == "uid").Value;
         return true;
     }
 

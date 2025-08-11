@@ -16,7 +16,7 @@ export const Route = createFileRoute('/login')({
 
 function LoginComponent() {
   const { auth } = Route.useRouteContext()
-  const { redirect } = Route.useSearch()
+  const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,7 +31,8 @@ function LoginComponent() {
     try {
       await auth.login(email, password)
       // Navigate to the redirect URL using router navigation
-      navigate({ to: redirect })
+      // @ts-ignore TanstackRouter doesn't play well when `to` is a variable
+      navigate({ to: search.redirect })
     } catch (err) {
       setError('Invalid email or password')
     } finally {

@@ -1,12 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 using TiyatroFlix.Api.Commands.Users;
 using TiyatroFlix.Api.Services;
+using TiyatroFlix.Domain.Entities;
+using TiyatroFlix.Infrastructure.Persistence;
 
 namespace TiyatroFlix.Api.Endpoints;
 
@@ -30,28 +34,33 @@ public static class AuthEndpoints
             .Produces(204)
             .Produces(400);
 
-        group.MapPost("/validate", ValidateToken)
-            .Produces(204)
+        group.MapGet("/validate", ValidateToken)
+            .Produces<ValidateResponse>()
             .Produces(400);
-
     }
 
     public record LoginRequest(
         [Required] string Email,
         [Required] string Password);
 
-    public record LoginResponse(
+    public record UserResponse(
         [Required] string Id,
         [Required] string? Email,
         [Required] string FirstName,
         [Required] string LastName,
+        [Required] string[] Roles
+        );
+
+    public record LoginResponse(
+        [Required] UserResponse User,
         [Required] AuthResponse Tokens
     );
 
     private static async Task<IResult> Login(
         [FromBody] LoginRequest request,
         [FromServices] IMediator mediator,
-        [FromServices] ITokenService tokenService)
+        [FromServices] ITokenService tokenService,
+        [FromServices] UserManager<ApplicationUser> userManager)
     {
         var command = new LoginUserCommand
         {
@@ -62,8 +71,9 @@ public static class AuthEndpoints
         try
         {
             var user = await mediator.Send(command);
+            var roles = await userManager.GetRolesAsync(user);
             var tokens = await tokenService.GenerateTokensAsync(user);
-            return Results.Ok(new LoginResponse(user.Id, user.Email, user.FirstName, user.LastName, tokens));
+            return Results.Ok(new LoginResponse(new UserResponse(user.Id, user.Email, user.FirstName, user.LastName, [.. roles]), tokens));
         }
         catch (Exception ex)
         {
@@ -110,9 +120,16 @@ public static class AuthEndpoints
         }
     }
 
-    private static IResult ValidateToken(
+    public record ValidateResponse(
+        [Required] bool Valid,
+        [Required] UserResponse User
+    );
+
+    private async static Task<IResult> ValidateToken(
         [FromHeader(Name = "Authorization")] string? authorization,
-        [FromServices] ITokenService tokenService)
+        [FromServices] ITokenService tokenService,
+        [FromServices] TiyatroFlixDbContext context,
+        [FromServices] UserManager<ApplicationUser> userManager)
     {
         try
         {
@@ -126,9 +143,15 @@ public static class AuthEndpoints
                 return Results.BadRequest();
             }
 
-            tokenService.ValidateToken(authorization[7..]);
+            if (!tokenService.ValidateToken(authorization[7..], out var userId))
+            {
+                return Results.Forbid();
+            }
 
-            return Results.NoContent();
+            var user = context.Users.First(x => x.Id == userId);
+            var roles = await userManager.GetRolesAsync(user);
+
+            return Results.Ok(new ValidateResponse(true, new UserResponse(user.Id, user.Email, user.FirstName, user.LastName, [.. roles])));
         }
         catch (Exception ex)
         {
