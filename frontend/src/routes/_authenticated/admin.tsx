@@ -7,5 +7,9 @@ export const Route = createFileRoute('/_authenticated/admin')({
       throw redirect({ to: '/' })
     }
   },
-  component: () => <Outlet />,
+  component: () => (
+    <div className="container mx-auto p-4">
+      <Outlet />
+    </div>
+  ),
 })

@@ -1,39 +1,21 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
+import { Toaster } from 'sonner'
 import Header from '../components/Header'
+import TanStackQueryLayout from '../integrations/tanstack-query/layout'
 
-import TanStackQueryLayout from '../integrations/tanstack-query/layout.tsx'
+export const Route = createRootRoute({
+  component: RootComponent,
+})
 
-import type { QueryClient } from '@tanstack/react-query'
-
-interface AuthState {
-  isAuthenticated: boolean
-  user: {
-    id: string
-    email: string
-    firstName: string
-    lastName: string
-    roles: Array<string>
-  } | null
-  login: (username: string, password: string) => Promise<void>
-  logout: () => void
-}
-
-interface MyRouterContext {
-  queryClient: QueryClient
-  auth: AuthState
-}
-
-export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: () => (
+function RootComponent() {
+  return (
     <>
       <Header />
-
       <Outlet />
       <TanStackRouterDevtools />
-
       <TanStackQueryLayout />
+      <Toaster position="top-right" richColors />
     </>
-  ),
-})
+  )
+}

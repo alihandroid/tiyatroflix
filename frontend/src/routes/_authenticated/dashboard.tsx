@@ -1,14 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useAuth } from '@/auth'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
   component: DashboardComponent,
 })
 
 function DashboardComponent() {
-  const { auth } = Route.useRouteContext()
+  const auth = useAuth()
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <button
