@@ -16,14 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '../../../components/ui/table'
-
-interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  createdAt: string
-}
+import type { User as UserType } from '@/lib/api'
 
 export const Route = createFileRoute('/_authenticated/admin/users')({
   component: UsersManagementComponent,
@@ -98,7 +91,7 @@ function UsersManagementComponent() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user: User) => (
+                  {users.map((user: UserType) => (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">

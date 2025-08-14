@@ -3,17 +3,17 @@ import type { Play } from '../types/play'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-interface ApiError {
+export interface ApiError {
   message: string
   statusCode: number
 }
 
-interface AuthTokens {
+export interface AuthTokens {
   accessToken: string
   refreshToken: string
 }
 
-interface User {
+export interface User {
   id: string
   email: string
   firstName: string

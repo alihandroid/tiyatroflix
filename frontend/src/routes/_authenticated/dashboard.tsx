@@ -1,7 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { PlayCircle, Users } from 'lucide-react'
-import { useAuth } from '@/auth'
 import { playsApi, usersApi } from '@/lib/api'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
@@ -9,7 +8,7 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 })
 
 function DashboardComponent() {
-  const auth = useAuth()
+  const { auth } = Route.useRouteContext()
 
   const { data: playsCount, isLoading: playsCountLoading } = useQuery({
     queryKey: ['plays', 'count'],

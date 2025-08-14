@@ -1,14 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { authApi } from './lib/api'
 import { tokenManager } from './lib/tokenManager'
-
-interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  roles: Array<string>
-}
+import type { User } from './lib/api'
 
 interface AuthState {
   isAuthenticated: boolean
