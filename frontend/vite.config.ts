@@ -32,10 +32,6 @@ export default defineConfig({
     tailwindcss(),
     validateEnvironmentVariables(),
   ],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),

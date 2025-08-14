@@ -19,6 +19,7 @@ export interface User {
   firstName: string
   lastName: string
   roles: Array<string>
+  createdAt: string
 }
 
 interface LoginResponse {
