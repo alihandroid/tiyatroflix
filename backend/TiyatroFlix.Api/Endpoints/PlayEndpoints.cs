@@ -24,6 +24,15 @@ public static class PlayEndpoints
         .WithName("GetAllPlays")
         .Produces<List<Play>>(StatusCodes.Status200OK);
 
+        // GET plays count - MUST be before /{id} route
+        group.MapGet("/count", async (TiyatroFlixDbContext context) =>
+        {
+            var count = await context.Plays.CountAsync();
+            return Results.Ok(new { count });
+        })
+        .WithName("GetPlaysCount")
+        .Produces<object>(StatusCodes.Status200OK);
+
         // GET play by ID
         group.MapGet("/{id}", async (int id, TiyatroFlixDbContext context) =>
         {

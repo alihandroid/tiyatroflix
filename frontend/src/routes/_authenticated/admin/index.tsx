@@ -1,6 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { Calendar, PlayCircle, Users } from 'lucide-react'
 import { useAuth } from '../../../auth'
+import { playsApi, usersApi } from '../../../lib/api'
 import {
   Card,
   CardContent,
@@ -15,18 +17,30 @@ export const Route = createFileRoute('/_authenticated/admin/')({
 function AdminDashboardComponent() {
   const { user } = useAuth()
 
+  const { data: playsCount, isLoading: playsCountLoading } = useQuery({
+    queryKey: ['plays', 'count'],
+    queryFn: playsApi.getCount,
+  })
+
+  const { data: usersCount, isLoading: usersCountLoading } = useQuery({
+    queryKey: ['users', 'count'],
+    queryFn: usersApi.getCount,
+  })
+
   const stats = [
     {
       title: 'Total Plays',
-      value: '23',
+      value: playsCountLoading ? '...' : playsCount?.count.toString() || '0',
       icon: <PlayCircle className="w-8 h-8 text-blue-500" />,
       description: 'Active plays in the system',
+      link: '/admin/plays',
     },
     {
       title: 'Users',
-      value: '142',
+      value: usersCountLoading ? '...' : usersCount?.count.toString() || '0',
       icon: <Users className="w-8 h-8 text-green-500" />,
       description: 'Registered users',
+      link: '/admin/users',
     },
     {
       title: 'Upcoming Shows',
@@ -44,22 +58,41 @@ function AdminDashboardComponent() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              {stat.icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {stats.map((stat) => {
+          const CardComponent = stat.link ? Link : 'div'
+          const cardProps = stat.link ? { to: stat.link } : {}
+
+          return (
+            <CardComponent
+              key={stat.title}
+              {...cardProps}
+              className={
+                stat.link ? 'block transition-transform hover:scale-105' : ''
+              }
+            >
+              <Card
+                className={
+                  stat.link
+                    ? 'cursor-pointer hover:shadow-lg transition-shadow'
+                    : ''
+                }
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    {stat.title}
+                  </CardTitle>
+                  {stat.icon}
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </CardComponent>
+          )
+        })}
       </div>
     </>
   )

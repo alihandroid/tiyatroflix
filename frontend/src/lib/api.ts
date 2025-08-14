@@ -49,12 +49,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
       }
     }
 
-    const error: ApiError = await response
-      .json()
-      .catch(() => ({
-        message: 'An error occurred',
-        statusCode: response.status,
-      }))
+    const error: ApiError = await response.json().catch(() => ({
+      message: 'An error occurred',
+      statusCode: response.status,
+    }))
     throw new Error(error.message || 'An error occurred')
   }
   // Handle 204 No Content - return undefined for void operations
@@ -163,6 +161,12 @@ export const playsApi = {
     return makeAuthenticatedRequest<Play>(`${API_BASE_URL}/plays/${id}`)
   },
 
+  getCount: async (): Promise<{ count: number }> => {
+    return makeAuthenticatedRequest<{ count: number }>(
+      `${API_BASE_URL}/plays/count`,
+    )
+  },
+
   create: async (play: Omit<Play, 'id'>): Promise<Play> => {
     return makeAuthenticatedRequest<Play>(`${API_BASE_URL}/plays`, {
       method: 'POST',
@@ -181,5 +185,17 @@ export const playsApi = {
     return makeAuthenticatedRequest<void>(`${API_BASE_URL}/plays/${id}`, {
       method: 'DELETE',
     })
+  },
+}
+
+export const usersApi = {
+  getAll: async (): Promise<Array<User>> => {
+    return makeAuthenticatedRequest<Array<User>>(`${API_BASE_URL}/users`)
+  },
+
+  getCount: async (): Promise<{ count: number }> => {
+    return makeAuthenticatedRequest<{ count: number }>(
+      `${API_BASE_URL}/users/count`,
+    )
   },
 }
