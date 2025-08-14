@@ -1,6 +1,6 @@
 using MediatR;
 
-using TiyatroFlix.Api.Commands.Users;
+using TiyatroFlix.Api.Commands.Auth;
 using TiyatroFlix.Api.Services;
 
 namespace TiyatroFlix.Api.Endpoints
@@ -16,7 +16,7 @@ namespace TiyatroFlix.Api.Endpoints
             group.MapPost("/register", async (
                 IMediator mediator,
                 ITokenService tokenService,
-                RegisterUserCommand command) =>
+                RegisterCommand command) =>
             {
                 try
                 {
@@ -30,7 +30,7 @@ namespace TiyatroFlix.Api.Endpoints
                 }
             })
             .WithName("RegisterUser")
-            .Produces<AuthResponse>()
+            .Produces<AuthResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         }
     }
