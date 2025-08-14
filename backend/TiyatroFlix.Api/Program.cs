@@ -13,6 +13,15 @@ using TiyatroFlix.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
+// Configure Sentry
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.Environment = builder.Environment.EnvironmentName;
+});
+
 // Add services to the container.
 builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
