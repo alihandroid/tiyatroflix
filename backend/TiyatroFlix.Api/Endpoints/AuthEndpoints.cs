@@ -1,14 +1,11 @@
-using MediatR;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-using TiyatroFlix.Api.Commands.Auth;
 using TiyatroFlix.Api.Models;
-using TiyatroFlix.Api.Queries.Auth;
 using TiyatroFlix.Api.Services;
 using TiyatroFlix.Domain.Entities;
+using TiyatroFlix.Infrastructure.Persistence;
 
 namespace TiyatroFlix.Api.Endpoints;
 
@@ -20,11 +17,23 @@ public static class AuthEndpoints
             .WithTags("Authentication")
             .WithOpenApi();
 
-        group.MapPost("/login", async ([FromBody] LoginCommand command, IMediator mediator, ITokenService tokenService, UserManager<ApplicationUser> userManager) =>
+        group.MapPost("/login", async ([FromBody] LoginRequest request, ITokenService tokenService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) =>
         {
             try
             {
-                var user = await mediator.Send(command);
+                var user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                {
+                    return Results.BadRequest("Invalid login attempt.");
+                }
+
+                var result = await signInManager.PasswordSignInAsync(user, request.Password, isPersistent: false, lockoutOnFailure: false);
+
+                if (!result.Succeeded)
+                {
+                    return Results.BadRequest("Invalid login attempt.");
+                }
+
                 var roles = await userManager.GetRolesAsync(user);
                 var tokens = await tokenService.GenerateTokensAsync(user);
                 return Results.Ok(new LoginResponse(new UserResponse(user.Id, user.Email, user.FirstName, user.LastName, [.. roles]), tokens));
@@ -38,11 +47,11 @@ public static class AuthEndpoints
         .Produces<LoginResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
 
-        group.MapPost("/refresh", async ([FromBody] RefreshRequest request, IMediator mediator) =>
+        group.MapPost("/refresh", async ([FromBody] RefreshRequest request, ITokenService tokenService) =>
         {
             try
             {
-                var tokens = await mediator.Send(new RefreshTokenCommand(request.AccessToken, request.RefreshToken));
+                var tokens = await tokenService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
                 return Results.Ok(tokens);
             }
             catch (SecurityTokenException ex)
@@ -54,11 +63,11 @@ public static class AuthEndpoints
         .Produces<AuthResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
 
-        group.MapPost("/revoke", async ([FromBody] RevokeRequest request, IMediator mediator) =>
+        group.MapPost("/revoke", async ([FromBody] RevokeRequest request, ITokenService tokenService) =>
         {
             try
             {
-                await mediator.Send(new RevokeTokenCommand(request.RefreshToken));
+                await tokenService.RevokeRefreshTokenAsync(request.RefreshToken);
                 return Results.NoContent();
             }
             catch (Exception ex)
@@ -70,7 +79,7 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status400BadRequest);
 
-        group.MapGet("/validate", async ([FromHeader(Name = "Authorization")] string? authorization, IMediator mediator) =>
+        group.MapGet("/validate", async ([FromHeader(Name = "Authorization")] string? authorization, ITokenService tokenService, TiyatroFlixDbContext context, UserManager<ApplicationUser> userManager) =>
         {
             try
             {
@@ -79,7 +88,23 @@ public static class AuthEndpoints
                     return Results.BadRequest();
                 }
 
-                var response = await mediator.Send(new ValidateTokenQuery(authorization));
+                if (!authorization.StartsWith("Bearer "))
+                {
+                    return Results.BadRequest();
+                }
+
+                if (!tokenService.ValidateToken(authorization[7..], out var userId))
+                {
+                    return Results.Forbid();
+                }
+
+                var user = context.Users.First(x => x.Id == userId);
+                var roles = await userManager.GetRolesAsync(user);
+
+                var response = new ValidateResponse(
+                    true,
+                    new UserResponse(user.Id, user.Email, user.FirstName, user.LastName, [.. roles]));
+                
                 return Results.Ok(response);
             }
             catch (ArgumentException)

@@ -1,13 +1,10 @@
 using System.Text;
 
-using FluentValidation;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-using TiyatroFlix.Api.Behaviors;
 using TiyatroFlix.Api.Endpoints;
 using TiyatroFlix.Api.Services;
 using TiyatroFlix.Domain.Entities;
@@ -91,13 +88,6 @@ builder.Services.AddAuthorization(options =>
 // Register TokenService
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// Register MediatR
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssemblyContaining<Program>();
-    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-});
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Add exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

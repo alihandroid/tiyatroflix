@@ -10,22 +10,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             Instance = httpContext.Request.Path
         };
 
-        if (exception is FluentValidation.ValidationException fluentException)
-        {
-            problemDetails.Title = "one or more validation errors occurred.";
-            problemDetails.Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1";
-            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            var validationErrors = new List<string>();
-            foreach (var error in fluentException.Errors)
-            {
-                validationErrors.Add(error.ErrorMessage);
-            }
-            problemDetails.Extensions.Add("errors", validationErrors);
-        }
-        else
-        {
-            problemDetails.Title = exception.Message;
-        }
+        problemDetails.Title = exception.Message;
 
         logger.LogError("{ProblemDetailsTitle}", problemDetails.Title);
 
