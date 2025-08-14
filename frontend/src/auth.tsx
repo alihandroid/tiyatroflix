@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { authApi } from './lib/api'
+import { tokenManager } from './lib/tokenManager'
 
 interface User {
   id: string
@@ -12,7 +14,7 @@ interface AuthState {
   isAuthenticated: boolean
   user: User | null
   login: (username: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
@@ -24,31 +26,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Restore auth state on app load
   useEffect(() => {
-    const token = localStorage.getItem('access-token')
-    if (token) {
-      // Validate token with your API
-      fetch(import.meta.env.VITE_API_BASE_URL + '/auth/validate', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((response) => response.json())
-        .then((userData) => {
-          console.log(userData)
+    const initAuth = async () => {
+      const token = await tokenManager.getValidAccessToken()
+      if (token) {
+        try {
+          const userData = await authApi.validateToken(token)
           if (userData.valid) {
             setUser(userData.user)
             setIsAuthenticated(true)
           } else {
-            localStorage.removeItem('access-token')
+            tokenManager.clearTokens()
           }
-        })
-        .catch(() => {
-          localStorage.removeItem('access-token')
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    } else {
+        } catch {
+          tokenManager.clearTokens()
+        }
+      }
       setIsLoading(false)
     }
+
+    initAuth()
+  }, [])
+
+  // Listen for logout events
+  useEffect(() => {
+    const handleLogout = () => {
+      setUser(null)
+      setIsAuthenticated(false)
+      tokenManager.clearTokens()
+    }
+
+    window.addEventListener('auth:logout', handleLogout)
+    return () => window.removeEventListener('auth:logout', handleLogout)
   }, [])
 
   // Show loading state while checking auth
@@ -61,33 +69,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    // Replace with your authentication logic
-    const response = await fetch(
-      import.meta.env.VITE_API_BASE_URL + '/auth/login',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      },
-    )
-
-    if (response.ok) {
-      const { user: userData, tokens } = await response.json()
+    try {
+      const { user: userData, tokens } = await authApi.login(email, password)
       setUser(userData)
       setIsAuthenticated(true)
-      // Store token for persistence
-      localStorage.setItem('access-token', tokens.accessToken)
-      localStorage.setItem('refresh-token', tokens.refreshToken)
-    } else {
+      tokenManager.setTokens(tokens)
+    } catch (error) {
       throw new Error('Authentication failed')
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    const refreshToken = tokenManager.getRefreshToken()
+
+    // Try to revoke the refresh token on the server
+    if (refreshToken) {
+      try {
+        await authApi.revokeToken(refreshToken)
+      } catch {
+        // Ignore errors during revocation - we're logging out anyway
+      }
+    }
+
     setUser(null)
     setIsAuthenticated(false)
-    localStorage.removeItem('access-token')
-    localStorage.removeItem('refresh-token')
+    tokenManager.clearTokens()
   }
 
   return (

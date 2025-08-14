@@ -8,12 +8,16 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 function DashboardComponent() {
   const auth = useAuth()
 
+  const handleLogout = async () => {
+    await auth.logout()
+  }
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <button
-          onClick={auth.logout}
+          onClick={handleLogout}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Sign Out
