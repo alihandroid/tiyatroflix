@@ -33,8 +33,7 @@ export function PlayFormDialog({ play, isOpen, onClose }: PlayFormDialogProps) {
       )
       onClose()
     },
-    onError: (error) => {
-      console.error('Failed to save play:', error)
+    onError: () => {
       toast.error(play ? 'Failed to update play' : 'Failed to create play')
     },
   })

@@ -74,8 +74,7 @@ function PlaysManagementComponent() {
       setPlayToDelete(null)
       toast.success('Play deleted successfully')
     },
-    onError: (error) => {
-      console.error('Failed to delete play:', error)
+    onError: () => {
       toast.error('Failed to delete play. Please try again.')
     },
   })
