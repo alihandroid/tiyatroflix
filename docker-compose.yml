@@ -1,0 +1,39 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5141:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/tiyatroflix.db
+      - Sentry__Dsn=${BACKEND_SENTRY_DSN}
+      - JwtSettings__Secret=${JWT_SECRET}
+    volumes:
+      - backend-data:/app/data
+    networks:
+      - tiyatroflix
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend  
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_BASE_URL=/api
+      - VITE_SENTRY_DSN=${FRONTEND_SENTRY_DSN}
+    networks:
+      - tiyatroflix
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  tiyatroflix:
+    driver: bridge
+
+volumes:
+  backend-data:

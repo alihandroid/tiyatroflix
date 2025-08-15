@@ -9,8 +9,19 @@ import App from './App.tsx'
 // Initialize Sentry
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration({
+      maskAllText: false,
+      blockAllMedia: false,
+    }),
+  ],
+  // Session Replay
+  replaysSessionSampleRate: import.meta.env.DEV ? 1.0 : 0.1,
+  replaysOnErrorSampleRate: 1.0,
   environment: import.meta.env.MODE,
   tracesSampleRate: 1.0,
+  tracePropagationTargets: ['localhost', import.meta.env.VITE_API_BASE_URL],
   // Enable in both development and production for testing
   enabled: !!import.meta.env.VITE_SENTRY_DSN,
   debug: import.meta.env.DEV, // Show debug info in development

@@ -19,8 +19,14 @@ builder.Configuration.AddEnvironmentVariables();
 builder.WebHost.UseSentry(options =>
 {
     options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.TracesSampleRate = 1.0;
     options.Environment = builder.Environment.EnvironmentName;
+    options.Debug = builder.Environment.IsDevelopment();
+    options.SendDefaultPii = false;
+    options.CaptureFailedRequests = true;
 });
+
+builder.Logging.AddSentry();
 
 // Add services to the container.
 builder.Services.AddCors();
@@ -104,6 +110,8 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseSentryTracing();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -127,20 +135,38 @@ app.MapAuthEndpoints();
 // Register global exception handler
 app.UseExceptionHandler();
 
-// Seed the database
-using (var scope = app.Services.CreateScope())
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+// Ensure database is created and migrations are applied
+try
 {
-    var services = scope.ServiceProvider;
-    try
-    {
-        PlaySeeder.Seed(services);
-        AdminRoleMigration.SeedAdminRole(services);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred seeding the DB.");
-    }
+    logger.LogInformation("Applying database migrations...");
+    var context = services.GetRequiredService<TiyatroFlixDbContext>();
+    context.Database.Migrate();
+    logger.LogInformation("Database migrations applied successfully");
+
+    // Seed the database after migration
+    logger.LogInformation("Seeding database...");
+    PlaySeeder.Seed(services);
+    AdminRoleMigration.SeedAdminRole(services);
+    logger.LogInformation("Database seeding completed successfully");
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "An error occurred during database initialization or seeding.");
+    throw;
 }
 
-app.Run();
+// Start the application
+try
+{
+    logger.LogInformation("Starting TiyatroFlix API with Sentry observability");
+    app.Run();
+}
+catch (Exception ex)
+{
+    logger.LogCritical(ex, "Application terminated unexpectedly");
+    throw;
+}
