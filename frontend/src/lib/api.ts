@@ -10,7 +10,6 @@ export interface ApiError {
 
 export interface AuthTokens {
   accessToken: string
-  refreshToken: string
 }
 
 export interface User {
@@ -27,8 +26,8 @@ interface LoginResponse {
   tokens: AuthTokens
 }
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
-  const token = await tokenManager.getValidAccessToken()
+function getAuthHeaders(): Record<string, string> {
+  const token = tokenManager.getValidAccessToken()
   return {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -37,17 +36,11 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    // If unauthorized, try to refresh token and retry once
+    // If unauthorized, clear tokens and redirect to login
     if (response.status === 401) {
-      try {
-        await tokenManager.refreshTokens()
-        throw new Error('TOKEN_REFRESH_NEEDED')
-      } catch (refreshError) {
-        tokenManager.clearTokens()
-        // Redirect to login or emit logout event
-        window.dispatchEvent(new CustomEvent('auth:logout'))
-        throw new Error('Authentication failed')
-      }
+      tokenManager.clearTokens()
+      window.dispatchEvent(new CustomEvent('auth:logout'))
+      throw new Error('Authentication failed')
     }
 
     const error: ApiError = await response.json().catch(() => ({
@@ -66,9 +59,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 async function makeAuthenticatedRequest<T>(
   url: string,
   options: RequestInit = {},
-  retryCount = 0,
 ): Promise<T> {
-  const headers = await getAuthHeaders()
+  const headers = getAuthHeaders()
 
   const response = await fetch(url, {
     ...options,
@@ -78,28 +70,7 @@ async function makeAuthenticatedRequest<T>(
     },
   })
 
-  try {
-    return await handleResponse<T>(response)
-  } catch (error) {
-    // If token refresh is needed and we haven't retried yet
-    if (
-      error instanceof Error &&
-      error.message === 'TOKEN_REFRESH_NEEDED' &&
-      retryCount === 0
-    ) {
-      // Retry the request with new token
-      const newHeaders = await getAuthHeaders()
-      const retryResponse = await fetch(url, {
-        ...options,
-        headers: {
-          ...newHeaders,
-          ...options.headers,
-        },
-      })
-      return handleResponse<T>(retryResponse)
-    }
-    throw error
-  }
+  return handleResponse<T>(response)
 }
 
 export const authApi = {
@@ -112,33 +83,6 @@ export const authApi = {
       body: JSON.stringify({ email, password }),
     })
     return handleResponse<LoginResponse>(response)
-  },
-
-  refreshToken: async (
-    accessToken: string,
-    refreshToken: string,
-  ): Promise<AuthTokens> => {
-    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ accessToken, refreshToken }),
-    })
-    return handleResponse<AuthTokens>(response)
-  },
-
-  revokeToken: async (refreshToken: string): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/auth/revoke`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refreshToken }),
-    })
-    if (!response.ok) {
-      throw new Error('Failed to revoke token')
-    }
   },
 
   validateToken: async (

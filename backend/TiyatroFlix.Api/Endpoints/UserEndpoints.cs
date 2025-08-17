@@ -69,7 +69,7 @@ public static class UserEndpoints
                     return Results.BadRequest($"User registration failed: {errors}");
                 }
 
-                var authResponse = await tokenService.GenerateTokensAsync(user);
+                var authResponse = await tokenService.GenerateTokenAsync(user);
                 return Results.Ok(authResponse);
             }
             catch (Exception ex)

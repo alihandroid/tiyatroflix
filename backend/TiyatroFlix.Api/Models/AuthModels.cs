@@ -27,11 +27,6 @@ public record LoginResponse(
     [Required] Services.AuthResponse Tokens
 );
 
-public record RefreshRequest(
-    [Required] string AccessToken,
-    [Required] string RefreshToken);
-
-public record RevokeRequest([Required] string RefreshToken);
 
 public record ValidateResponse(
     [Required] bool Valid,

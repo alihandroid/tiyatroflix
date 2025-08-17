@@ -35,7 +35,7 @@ public static class AuthEndpoints
                 }
 
                 var roles = await userManager.GetRolesAsync(user);
-                var tokens = await tokenService.GenerateTokensAsync(user);
+                var tokens = await tokenService.GenerateTokenAsync(user);
                 return Results.Ok(new LoginResponse(new UserResponse(user.Id, user.Email, user.FirstName, user.LastName, [.. roles]), tokens));
             }
             catch (Exception ex)
@@ -47,37 +47,6 @@ public static class AuthEndpoints
         .Produces<LoginResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
 
-        group.MapPost("/refresh", async ([FromBody] RefreshRequest request, ITokenService tokenService) =>
-        {
-            try
-            {
-                var tokens = await tokenService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
-                return Results.Ok(tokens);
-            }
-            catch (SecurityTokenException ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
-        })
-        .WithName("RefreshToken")
-        .Produces<AuthResponse>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest);
-
-        group.MapPost("/revoke", async ([FromBody] RevokeRequest request, ITokenService tokenService) =>
-        {
-            try
-            {
-                await tokenService.RevokeRefreshTokenAsync(request.RefreshToken);
-                return Results.NoContent();
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
-        })
-        .WithName("RevokeToken")
-        .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status400BadRequest);
 
         group.MapGet("/validate", async ([FromHeader(Name = "Authorization")] string? authorization, ITokenService tokenService, TiyatroFlixDbContext context, UserManager<ApplicationUser> userManager) =>
         {

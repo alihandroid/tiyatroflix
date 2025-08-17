@@ -7,7 +7,7 @@ interface AuthState {
   isAuthenticated: boolean
   user: User | null
   login: (username: string, password: string) => Promise<void>
-  logout: () => Promise<void>
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Restore auth state on app load
   useEffect(() => {
     const initAuth = async () => {
-      const token = await tokenManager.getValidAccessToken()
+      const token = tokenManager.getValidAccessToken()
       if (token) {
         try {
           const userData = await authApi.validateToken(token)
@@ -72,18 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const logout = async () => {
-    const refreshToken = tokenManager.getRefreshToken()
-
-    // Try to revoke the refresh token on the server
-    if (refreshToken) {
-      try {
-        await authApi.revokeToken(refreshToken)
-      } catch {
-        // Ignore errors during revocation - we're logging out anyway
-      }
-    }
-
+  const logout = () => {
     setUser(null)
     setIsAuthenticated(false)
     tokenManager.clearTokens()

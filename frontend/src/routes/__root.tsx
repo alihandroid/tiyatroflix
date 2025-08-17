@@ -10,7 +10,7 @@ interface AuthState {
   isAuthenticated: boolean
   user: User | null
   login: (username: string, password: string) => Promise<void>
-  logout: () => Promise<void>
+  logout: () => void
 }
 
 interface MyRouterContext {
