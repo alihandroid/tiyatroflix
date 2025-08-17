@@ -1,23 +1,25 @@
-# Frontend Dockerfile for TiyatroFlix React App
-FROM node:18-alpine AS base
+#https://pnpm.io/docker
+FROM node:20-slim AS base
 
-# Install pnpm
-RUN npm install -g pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
-FROM base AS deps
+FROM base AS build
+
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+# Refetch only when pnpm-lock.yaml changes
+COPY pnpm-lock.yaml .
+RUN pnpm fetch
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Reinstall only when package.json changes
+COPY package.json .
+RUN pnpm install --offline
+
+# Rebuild when anything changes
 COPY . .
-
-# Build the application
-RUN pnpm run build
+RUN pnpm build
 
 FROM nginx:alpine AS runner
 WORKDIR /usr/share/nginx/html
@@ -26,7 +28,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy built assets from builder stage
-COPY --from=builder /app/dist .
+COPY --from=build /app/dist .
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
