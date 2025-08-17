@@ -104,7 +104,7 @@ public static class AuthEndpoints
                 var response = new ValidateResponse(
                     true,
                     new UserResponse(user.Id, user.Email, user.FirstName, user.LastName, [.. roles]));
-                
+
                 return Results.Ok(response);
             }
             catch (ArgumentException)
@@ -125,6 +125,4 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status403Forbidden);
     }
-
-
 }
