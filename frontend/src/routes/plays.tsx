@@ -53,18 +53,18 @@ function PlaysRoute() {
             params={{ id: play.id.toString() }}
             key={play.id}
           >
-            <Card className="hover:shadow-lg transition-shadow duration-300">
+            <Card className="hover:shadow-lg transition-shadow duration-300 overflow-hidden pt-0">
+              <div className="aspect-[3/2] overflow-hidden bg-gray-100">
+                <img
+                  src={play.posterImageUrl || '/placeholder-poster.jpg'}
+                  alt={play.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <CardHeader>
                 <CardTitle className="text-lg truncate">{play.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="aspect-w-2 aspect-h-3 mb-4 overflow-hidden rounded-md">
-                  <img
-                    src={play.posterImageUrl || '/placeholder-poster.jpg'}
-                    alt={play.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 <p className="text-sm text-gray-600 mb-2 font-semibold">
                   Director: {play.director}
                 </p>

@@ -51,13 +51,15 @@ function PlayDetails() {
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
-          {play.posterImageUrl && (
-            <img
-              src={play.posterImageUrl}
-              alt={`${play.title ?? 'Untitled Play'} Poster`}
-              className="w-full rounded-lg shadow-lg"
-            />
-          )}
+          <div className="aspect-[2/3] max-w-sm mx-auto bg-gray-100 rounded-lg overflow-hidden shadow-lg">
+            {play.posterImageUrl && (
+              <img
+                src={play.posterImageUrl}
+                alt={`${play.title ?? 'Untitled Play'} Poster`}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
         </div>
         <div className="md:col-span-2">
           <p className="text-lg mb-4">
