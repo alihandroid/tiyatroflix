@@ -7,3 +7,6 @@ count.txt
 .env
 .nitro
 .tanstack
+
+# Sentry Config File
+.env.sentry-build-plugin
