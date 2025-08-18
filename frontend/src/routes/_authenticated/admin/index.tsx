@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Calendar, PlayCircle, Users } from 'lucide-react'
+import { PlayCircle, Users } from 'lucide-react'
 import { useAuth } from '../../../auth'
 import { playsApi, usersApi } from '../../../lib/api'
 import {
@@ -42,12 +42,6 @@ function AdminDashboardComponent() {
       description: 'Registered users',
       link: '/admin/users',
     },
-    {
-      title: 'Upcoming Shows',
-      value: '5',
-      icon: <Calendar className="w-8 h-8 text-purple-500" />,
-      description: 'Shows scheduled this week',
-    },
   ]
 
   return (
@@ -57,7 +51,7 @@ function AdminDashboardComponent() {
         <p className="text-gray-600 mt-2">Welcome back, {user?.firstName}!</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {stats.map((stat) => {
           const CardComponent = stat.link ? Link : 'div'
           const cardProps = stat.link ? { to: stat.link } : {}

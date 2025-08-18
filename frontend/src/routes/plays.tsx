@@ -44,7 +44,7 @@ function PlaysRoute() {
     )
 
   return (
-    <section className="container mx-auto py-12">
+    <section className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-4xl font-bold text-center mb-8">Explore Plays</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {plays?.map((play) => (
@@ -53,7 +53,7 @@ function PlaysRoute() {
             params={{ id: play.id.toString() }}
             key={play.id}
           >
-            <Card className="hover:shadow-lg transition-shadow duration-300 overflow-hidden pt-0">
+            <Card className="hover:shadow-lg transition-shadow duration-300 overflow-hidden pt-0 h-full">
               <div className="aspect-[3/2] overflow-hidden bg-gray-100">
                 <img
                   src={play.posterImageUrl || '/placeholder-poster.jpg'}
