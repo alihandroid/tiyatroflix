@@ -85,6 +85,22 @@ export const authApi = {
     return handleResponse<LoginResponse>(response)
   },
 
+  register: async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+  ): Promise<LoginResponse> => {
+    const response = await fetch(`${API_BASE_URL}/users/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password, firstName, lastName }),
+    })
+    return handleResponse<LoginResponse>(response)
+  },
+
   validateToken: async (
     token: string,
   ): Promise<{ valid: boolean; user: User }> => {

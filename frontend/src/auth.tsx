@@ -40,27 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth()
   }, [])
 
-  // Listen for logout events
-  useEffect(() => {
-    const handleLogout = () => {
-      setUser(null)
-      setIsAuthenticated(false)
-      tokenManager.clearTokens()
-    }
-
-    window.addEventListener('auth:logout', handleLogout)
-    return () => window.removeEventListener('auth:logout', handleLogout)
-  }, [])
-
-  // Show loading state while checking auth
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    )
-  }
-
   const login = async (email: string, password: string) => {
     try {
       const { user: userData, tokens } = await authApi.login(email, password)
@@ -76,6 +55,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
     setIsAuthenticated(false)
     tokenManager.clearTokens()
+  }
+
+  // Listen for logout events
+  useEffect(() => {
+    window.addEventListener('auth:logout', logout)
+    return () => window.removeEventListener('auth:logout', logout)
+  }, [])
+
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    )
   }
 
   return (

@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search) => ({
-    redirect: (search.redirect as string) || '/',
+    redirect: (search.redirect as string) || '/dashboard',
   }),
   beforeLoad: ({ context, search }) => {
     // Redirect if already authenticated
