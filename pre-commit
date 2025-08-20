@@ -4,7 +4,7 @@
 
 # Change to frontend directory and run lint-staged
 cd frontend && npx lint-staged  && cd ..
-cd backend && dotnet format && cd ..
+cd backend && npx lint-staged && cd ..
 
 # Exit with the status of lint-staged
 exit $?

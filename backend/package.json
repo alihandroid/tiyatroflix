@@ -1,0 +1,15 @@
+{
+  "name": "tiyatroflix-backend",
+  "version": "1.0.0",
+  "description": "TiyatroFlix backend",
+  "private": true,
+  "scripts": {
+    "format": "dotnet format"
+  },
+  "devDependencies": {
+    "lint-staged": "^16.1.2"
+  },
+  "lint-staged": {
+    "*.cs": "dotnet format --include"
+  }
+}
