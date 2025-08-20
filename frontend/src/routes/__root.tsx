@@ -1,4 +1,8 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import {
+  Outlet,
+  createRootRouteWithContext,
+  useLocation,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Toaster } from 'sonner'
 import Header from '../components/Header'
@@ -23,9 +27,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootComponent() {
+  const location = useLocation()
+  const showHeader = location.pathname !== '/'
+
   return (
     <>
-      <Header />
+      {showHeader && <Header />}
       <Outlet />
       <TanStackRouterDevtools />
       <TanStackQueryLayout />
