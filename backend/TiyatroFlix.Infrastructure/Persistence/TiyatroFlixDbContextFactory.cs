@@ -11,7 +11,6 @@ public class TiyatroFlixDbContextFactory : IDesignTimeDbContextFactory<TiyatroFl
         var optionsBuilder = new DbContextOptionsBuilder<TiyatroFlixDbContext>();
 
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "backend", "TiyatroFlix.Api"))
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.Development.json", optional: true)
             .Build();

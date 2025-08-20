@@ -16,7 +16,6 @@ import { Textarea } from '@/components/ui/textarea'
 
 const playFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  director: z.string().min(1, 'Director is required'),
   description: z.string().min(1, 'Description is required'),
   posterImageUrl: z.string().url('Must be a valid URL').optional(),
   trailerUrl: z.string().url('Must be a valid URL').optional(),
@@ -36,7 +35,6 @@ export function PlayForm({ play, onSubmit, isSubmitting }: PlayFormProps) {
     resolver: zodResolver(playFormSchema),
     defaultValues: {
       title: play?.title || '',
-      director: play?.director || '',
       description: play?.description || '',
       posterImageUrl: play?.posterImageUrl || '',
       trailerUrl: play?.trailerUrl || '',
@@ -55,20 +53,6 @@ export function PlayForm({ play, onSubmit, isSubmitting }: PlayFormProps) {
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input placeholder="Enter play title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="director"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Director</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter director name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

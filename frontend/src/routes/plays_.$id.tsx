@@ -65,9 +65,6 @@ function PlayDetails() {
           <p className="text-lg mb-4">
             {play.description ?? 'No description available.'}
           </p>
-          <p className="mb-2">
-            <strong>Director:</strong> {play.director ?? 'Unknown Director'}
-          </p>
           {play.trailerUrl && (
             <div className="mt-4">
               <a

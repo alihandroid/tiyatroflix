@@ -50,7 +50,6 @@ public static class PlayEndpoints
             {
                 Title = request.Title,
                 Description = request.Description,
-                Director = request.Director,
                 PosterImageUrl = request.PosterImageUrl,
                 TrailerUrl = request.TrailerUrl,
                 VideoUrl = request.VideoUrl
@@ -78,7 +77,6 @@ public static class PlayEndpoints
 
             play.Title = request.Title;
             play.Description = request.Description;
-            play.Director = request.Director;
             play.PosterImageUrl = request.PosterImageUrl;
             play.TrailerUrl = request.TrailerUrl;
             play.VideoUrl = request.VideoUrl;

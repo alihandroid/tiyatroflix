@@ -86,12 +86,6 @@ function PlaysManagementComponent() {
       cell: (info: any) => info.getValue(),
     },
     {
-      accessorKey: 'director',
-      header: 'Director',
-      cell: (info: any) => info.getValue(),
-      enableHiding: true,
-    },
-    {
       accessorKey: 'description',
       header: 'Description',
       cell: (info: any) => (

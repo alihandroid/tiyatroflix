@@ -65,9 +65,6 @@ function PlaysRoute() {
                 <CardTitle className="text-lg truncate">{play.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600 mb-2 font-semibold">
-                  Director: {play.director}
-                </p>
                 <p className="text-sm text-gray-500 line-clamp-3">
                   {play.description}
                 </p>
