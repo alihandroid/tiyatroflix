@@ -1,4 +1,5 @@
 onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
+  - "@sentry/cli"
+  - "@tailwindcss/oxide"
   - esbuild
   - unrs-resolver
