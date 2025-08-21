@@ -82,6 +82,9 @@ start_frontend() {
         pnpm install
     fi
     
+    # Set API base URL for development mode
+    export VITE_API_BASE_URL="http://localhost:5141"
+    
     # Start the frontend in background
     pnpm dev &
     FRONTEND_PID=$!
