@@ -63,8 +63,10 @@ function UsersManagementComponent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Users Management</h1>
-        <p className="text-gray-600 mt-2">Manage system users</p>
+        <h1 className="text-3xl font-display font-bold text-foreground">
+          Users Management
+        </h1>
+        <p className="text-muted-foreground mt-2">Manage system users</p>
       </div>
 
       <Card>

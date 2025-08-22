@@ -2,7 +2,6 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { PlayCircle, Users } from 'lucide-react'
 import { playsApi, usersApi } from '@/lib/api'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
   component: DashboardComponent,
@@ -21,89 +20,74 @@ function DashboardComponent() {
     queryFn: usersApi.getCount,
   })
 
-  const handleLogout = async () => {
-    await auth.logout()
-  }
-
-  const stats = [
-    {
-      title: 'Total Plays',
-      value: playsCountLoading ? '...' : playsCount?.count.toString() || '0',
-      icon: <PlayCircle className="w-8 h-8 text-blue-500" />,
-      description: 'View all plays',
-      link: '/plays',
-    },
-    {
-      title: 'Users',
-      value: usersCountLoading ? '...' : usersCount?.count.toString() || '0',
-      icon: <Users className="w-8 h-8 text-green-500" />,
-      description: 'Registered users',
-    },
-  ]
-
   return (
-    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-        >
-          Sign Out
-        </button>
-      </div>
-
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-xl">Welcome back!</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-600">
-            Hello, <strong>{auth.user?.firstName}</strong>! You are successfully
-            authenticated.
+    <div className="min-h-screen bg-theater-gradient">
+      <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-display font-bold text-theater-gradient mb-4">
+            Welcome back, {auth.user?.firstName}!
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Ready to dive into the world of theater?
           </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Email: {auth.user?.email}
-          </p>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {stats.map((stat) => {
-          const CardComponent = stat.link ? Link : 'div'
-          const cardProps = stat.link ? { to: stat.link } : {}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <Link
+            to="/plays"
+            className="group block bg-theater-card border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 rounded-2xl p-8 shadow-2xl hover:scale-105 hover:shadow-purple-500/20"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <PlayCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+                Browse Plays
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Discover thousands of world-class theater performances
+              </p>
+              {playsCountLoading ? (
+                <div className="text-lg text-accent">Loading...</div>
+              ) : (
+                <div className="text-lg text-accent font-semibold">
+                  {playsCount?.count || 0} plays available
+                </div>
+              )}
+            </div>
+          </Link>
 
-          return (
-            <CardComponent
-              key={stat.title}
-              {...cardProps}
-              className={
-                stat.link ? 'block transition-transform hover:scale-105' : ''
-              }
-            >
-              <Card
-                className={
-                  stat.link
-                    ? 'cursor-pointer hover:shadow-lg transition-shadow'
-                    : ''
-                }
-              >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {stat.title}
-                  </CardTitle>
-                  {stat.icon}
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {stat.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </CardComponent>
-          )
-        })}
+          <div className="bg-theater-card border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-display font-bold text-foreground mb-3">
+                Community
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Join theater enthusiasts from around the world
+              </p>
+              {usersCountLoading ? (
+                <div className="text-lg text-accent">Loading...</div>
+              ) : (
+                <div className="text-lg text-accent font-semibold">
+                  {usersCount?.count || 0} members
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <Link
+            to="/plays"
+            className="inline-flex items-center gap-2 btn-theater-primary text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:btn-theater-primary transition-all"
+          >
+            <PlayCircle className="w-6 h-6" />
+            Start Watching
+          </Link>
+        </div>
       </div>
     </div>
   )

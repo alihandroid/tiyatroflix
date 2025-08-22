@@ -148,7 +148,9 @@ function PlaysManagementComponent() {
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
-        <h1 className="text-2xl sm:text-3xl font-bold">Manage Plays</h1>
+        <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">
+          Manage Plays
+        </h1>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           Add New Play
         </Button>
