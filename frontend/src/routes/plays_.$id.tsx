@@ -1,9 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { ExternalLink, Play as PlayIcon } from 'lucide-react'
+import { Play as PlayIcon } from 'lucide-react'
 import type { Play } from '@/types/play'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { createYouTubeEmbedUrl } from '@/lib/youtube'
 
 const fetchPlay = async (id: string | number): Promise<Play> => {
   const response = await fetch(
@@ -69,11 +70,32 @@ function PlayDetails() {
   return (
     <div className="min-h-screen bg-theater-gradient">
       <section className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-5xl font-display font-bold text-center mb-12 text-theater-gradient">
-          {play.title ?? 'Untitled Play'}
-        </h1>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-12">
+          <div className="lg:col-span-4">
+            <h1 className="text-5xl font-display font-bold mb-6 text-theater-gradient text-left">
+              {play.title ?? 'Untitled Play'}
+            </h1>
+            <p className="text-xl text-muted-foreground leading-relaxed mb-6 text-left">
+              {play.description ?? 'No description available.'}
+            </p>
+            {play.videoUrl && (
+              <div className="flex justify-start">
+                <Button
+                  asChild
+                  className="btn-theater-primary hover:btn-theater-primary text-white font-semibold"
+                >
+                  <Link
+                    to="/plays/$id/watch"
+                    params={{ id: play.id.toString() }}
+                  >
+                    <PlayIcon className="w-5 h-5 mr-2" />
+                    Watch Full Play
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="lg:col-span-1">
             <Card className="bg-theater-card border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 overflow-hidden shadow-2xl hover:shadow-purple-500/20 p-0">
               <div className="aspect-[2/3] overflow-hidden bg-slate-800 relative">
                 {play.posterImageUrl ? (
@@ -91,58 +113,21 @@ function PlayDetails() {
               </div>
             </Card>
           </div>
-          <div className="lg:col-span-3">
-            <Card className="bg-theater-card border-slate-700/50 p-8 shadow-2xl">
-              <CardContent className="space-y-6 p-0">
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-4">
-                    Description
-                  </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
-                    {play.description ?? 'No description available.'}
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                  {play.trailerUrl && (
-                    <Button
-                      asChild
-                      className="btn-theater-primary hover:btn-theater-primary text-white font-semibold"
-                    >
-                      <a
-                        href={play.trailerUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2"
-                      >
-                        <PlayIcon className="w-5 h-5" />
-                        Watch Trailer
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  )}
-                  {play.videoUrl && (
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="border-purple-400/50 text-purple-300 hover:bg-purple-500/10 font-semibold"
-                    >
-                      <a
-                        href={play.videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2"
-                      >
-                        <PlayIcon className="w-5 h-5" />
-                        Watch Full Play
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
+        {play.trailerUrl && createYouTubeEmbedUrl(play.trailerUrl) && (
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Trailer</h2>
+            <div className="aspect-video w-full overflow-hidden rounded-lg shadow-2xl">
+              <iframe
+                src={createYouTubeEmbedUrl(play.trailerUrl)!}
+                title={`${play.title ?? 'Play'} Trailer`}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
       </section>
     </div>
   )

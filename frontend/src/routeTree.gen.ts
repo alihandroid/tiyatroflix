@@ -20,6 +20,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminPlaysRouteImport } from './routes/_authenticated/admin/plays'
+import { Route as AuthenticatedPlaysIdWatchRouteImport } from './routes/_authenticated/plays_.$id_.watch'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -75,6 +76,12 @@ const AuthenticatedAdminPlaysRoute = AuthenticatedAdminPlaysRouteImport.update({
   path: '/plays',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedPlaysIdWatchRoute =
+  AuthenticatedPlaysIdWatchRouteImport.update({
+    id: '/plays_/$id_/watch',
+    path: '/plays/$id/watch',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/admin/plays': typeof AuthenticatedAdminPlaysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/plays/$id/watch': typeof AuthenticatedPlaysIdWatchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,6 +106,7 @@ export interface FileRoutesByTo {
   '/admin/plays': typeof AuthenticatedAdminPlaysRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/plays/$id/watch': typeof AuthenticatedPlaysIdWatchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,6 +121,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/plays': typeof AuthenticatedAdminPlaysRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/plays_/$id_/watch': typeof AuthenticatedPlaysIdWatchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/admin/plays'
     | '/admin/users'
     | '/admin/'
+    | '/plays/$id/watch'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/admin/plays'
     | '/admin/users'
     | '/admin'
+    | '/plays/$id/watch'
   id:
     | '__root__'
     | '/'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/plays'
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/'
+    | '/_authenticated/plays_/$id_/watch'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPlaysRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/plays_/$id_/watch': {
+      id: '/_authenticated/plays_/$id_/watch'
+      path: '/plays/$id/watch'
+      fullPath: '/plays/$id/watch'
+      preLoaderRoute: typeof AuthenticatedPlaysIdWatchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -261,11 +281,13 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPlaysIdWatchRoute: typeof AuthenticatedPlaysIdWatchRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPlaysIdWatchRoute: AuthenticatedPlaysIdWatchRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
