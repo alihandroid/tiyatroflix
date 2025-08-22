@@ -74,11 +74,15 @@ function PlaysRoute() {
                     src={play.posterImageUrl || '/placeholder-poster.jpg'}
                     alt={play.title}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    style={{ viewTransitionName: `play-poster-${play.id}` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg text-foreground truncate font-display">
+                  <CardTitle
+                    className="text-lg text-foreground truncate font-display"
+                    style={{ viewTransitionName: `play-title-${play.id}` }}
+                  >
                     {play.title}
                   </CardTitle>
                 </CardHeader>

@@ -72,7 +72,10 @@ function PlayDetails() {
       <section className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-12">
           <div className="lg:col-span-4">
-            <h1 className="text-5xl font-display font-bold mb-6 text-theater-gradient text-left">
+            <h1
+              className="text-5xl font-display font-bold mb-6 text-theater-gradient text-left"
+              style={{ viewTransitionName: `play-title-${play.id}` }}
+            >
               {play.title ?? 'Untitled Play'}
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed mb-6 text-left">
@@ -103,9 +106,13 @@ function PlayDetails() {
                     src={play.posterImageUrl}
                     alt={`${play.title ?? 'Untitled Play'} Poster`}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    style={{ viewTransitionName: `play-poster-${play.id}` }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                  <div
+                    className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-500/20 to-pink-500/20"
+                    style={{ viewTransitionName: `play-poster-${play.id}` }}
+                  >
                     <PlayIcon className="w-24 h-24 text-purple-400" />
                   </div>
                 )}
